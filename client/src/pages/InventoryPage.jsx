@@ -12,19 +12,20 @@ const InventoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const fetchInventory = async () => {
-    try {
-      const { data } = await axios.get('/api/inventory');
-      setInventory(data);
-    } catch (err) {
-      setError('Failed to fetch inventory');
-      toast.error('Error loading inventory');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const { data } = await axios.get('/api/inventory');
+        const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setInventory(sortedData);
+      } catch (err) {
+        setError('Failed to fetch inventory');
+        toast.error('Error loading inventory');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchInventory();
   }, []);
 
@@ -33,19 +34,19 @@ const InventoryPage = () => {
   const uniqueBins = new Set(inventory.map(item => item.bin)).size;
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
 
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2 text-center">📦 VeroLie Inventory</h1>
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold mb-2">📦 VeroLie Inventory</h1>
           <img 
             src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/a5d620f0-d980-4974-a74f-886f2a630962.png"
-            alt="Warehouse with shelves and worker scanning"
+            alt="Warehouse visual"
             className="rounded-md shadow-sm mb-2 w-full max-w-md mx-auto"
           />
-          <p className="text-gray-700 text-center text-sm">
+          <p className="text-gray-700 text-sm">
             This is the Inventory page. Navigate to Outsets or Insets from the menu above.
           </p>
         </div>
@@ -66,18 +67,18 @@ const InventoryPage = () => {
           </div>
         </div>
 
-        {/* Table or Error States */}
-        {loading ? (
-          <div className="text-center py-6 text-gray-600 text-sm">Loading inventory...</div>
-        ) : error ? (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded mb-3 text-sm">
-            {error}
-          </div>
-        ) : inventory.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 text-sm">No inventory records found.</div>
-        ) : (
-          <InventoryTable inventory={inventory} />
-        )}
+        {/* Table Section */}
+        <div className="overflow-x-auto mt-6">
+          {loading ? (
+            <p className="text-center text-gray-600">Loading inventory...</p>
+          ) : error ? (
+            <div className="bg-red-100 text-red-800 p-3 rounded-md">{error}</div>
+          ) : inventory.length === 0 ? (
+            <p className="text-center text-gray-500">No inventory records found.</p>
+          ) : (
+            <InventoryTable inventory={inventory} />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ const inventorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    default: function() {
+    default: function () {
       return `Item ${this.sku}`; // Auto-generate name if not provided
     }
   },
@@ -27,14 +27,14 @@ const inventorySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
-}, { 
-  timestamps: true,
+}, {
+  timestamps: true, // Adds createdAt and updatedAt
   toJSON: { virtuals: true },
-  toObject: { virtuals: true } 
+  toObject: { virtuals: true }
 });
 
-// Static method for stock updates
-inventorySchema.statics.updateStock = async function(sku, change, bin, name) {
+// 🔁 Static method to update or insert stock
+inventorySchema.statics.updateStock = async function (sku, change, bin, name) {
   let item = await this.findOne({ sku });
 
   if (item) {
@@ -44,7 +44,7 @@ inventorySchema.statics.updateStock = async function(sku, change, bin, name) {
     if (name) item.name = name;
   } else {
     if (change <= 0) throw new Error('Cannot remove non-existent item');
-    item = new this({ 
+    item = new this({
       sku,
       name: name || `Item ${sku}`,
       quantity: change,

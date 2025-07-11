@@ -1,8 +1,25 @@
-const Inset = require('../models/Inset');
 const Inventory = require('../models/Inventory');
+const Inset = require('../models/Inset');
 const AuditLog = require('../models/AuditLog');
 
-// Create a new inset and update inventory + log audit
+// GET: Fetch all inventory items (alias 'name' as 'productName' for frontend)
+const getInventory = async (req, res) => {
+  try {
+    const items = await Inventory.find({}).sort({ createdAt: -1 });
+
+    const formattedItems = items.map(item => ({
+      ...item._doc,
+      productName: item.name // alias for frontend consistency
+    }));
+
+    res.status(200).json(formattedItems);
+  } catch (err) {
+    console.error("❌ Error in getInventory:", err.message);
+    res.status(500).json({ error: "Failed to fetch inventory" });
+  }
+};
+
+// POST: Create a new inset and update inventory
 const createInset = async (req, res) => {
   try {
     console.log('=== INSET CREATION START ===');
@@ -10,10 +27,9 @@ const createInset = async (req, res) => {
     console.log('User ID:', req.userId);
     console.log('Username:', req.username);
 
-    const { sku, orderNo, bin, quantity, name } = req.body;
+    const { sku, orderNo, bin, quantity, productName } = req.body;
 
-    // Basic validation
-    if (!sku || !orderNo || !bin || !quantity || !name) {
+    if (!sku || !orderNo || !bin || !quantity || !productName) {
       console.log('❌ Validation failed - missing fields');
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -22,13 +38,18 @@ const createInset = async (req, res) => {
 
     // Step 1: Update inventory
     console.log('📦 Updating inventory...');
-    const inventoryItem = await Inventory.updateStock(sku, parseInt(quantity), bin);
+    const inventoryItem = await Inventory.updateStock(
+      sku,
+      parseInt(quantity),
+      bin,
+      productName
+    );
     console.log('✅ Inventory updated:', inventoryItem);
 
     // Step 2: Create Inset document
     const inset = new Inset({
       sku,
-      name,
+      name: productName, // stored in DB as 'name'
       orderNo,
       bin,
       quantity: parseInt(quantity),
@@ -41,7 +62,7 @@ const createInset = async (req, res) => {
     await inset.save();
     console.log('✅ Inset saved to database');
 
-    // Step 3: Create audit log
+    // Step 3: Audit Log
     const log = new AuditLog({
       actionType: 'CREATE',
       collectionName: 'Inset',
@@ -64,8 +85,6 @@ const createInset = async (req, res) => {
 
   } catch (err) {
     console.error('=== INSET CREATION ERROR ===');
-    console.error('Error:', err);
-
     res.status(500).json({
       message: 'Server Error',
       error: err.message,
@@ -74,12 +93,12 @@ const createInset = async (req, res) => {
   }
 };
 
-// Get all insets
+// GET: Fetch all insets with user name populated
 const getInsets = async (req, res) => {
   try {
     const insets = await Inset.find()
       .sort({ createdAt: -1 })
-      .populate('user.id', 'name'); // Populate only the user name
+      .populate('user.id', 'name');
 
     res.status(200).json(insets);
   } catch (err) {
@@ -92,6 +111,7 @@ const getInsets = async (req, res) => {
 };
 
 module.exports = {
+  getInventory,
   createInset,
   getInsets
 };

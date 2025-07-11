@@ -23,15 +23,15 @@ router.post('/inset', auth, async (req, res) => {
 
   try {
     const item = await Inventory.updateStock(sku, quantity, bin, name);
-    
+
     // Audit log
     await new AuditLog({
       actionType: 'CREATE',
       collection: 'Inventory',
       documentId: item._id,
-      changes: { 
+      changes: {
         sku,
-        quantity: quantity,
+        quantity,
         bin
       },
       user: {
@@ -54,14 +54,14 @@ router.post('/outset', auth, async (req, res) => {
 
   try {
     const item = await Inventory.updateStock(sku, -quantity);
-    
+
     // Audit log
     await new AuditLog({
       actionType: 'UPDATE',
       collection: 'Inventory',
       documentId: item._id,
-      changes: { 
-        quantity: -quantity 
+      changes: {
+        quantity: -quantity
       },
       user: {
         id: req.user.id,
