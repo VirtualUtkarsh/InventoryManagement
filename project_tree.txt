@@ -1,7 +1,7 @@
 InventorymgmtV1
 ├── .gitignore
-├── Collaboration.md
 ├── package.json
+├── vercel.json
 ├── project_tree.txt
 ├── RunProject_README.md
 ├── client
