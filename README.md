@@ -5,12 +5,14 @@ A full-stack web application designed to streamline inventory tracking, manage i
 
 You can test the live application here:
 
-**Link:**{https://inventory-green-seven.vercel.app} 
+**Link:**{ https://inventory-green-seven.vercel.app } 
 
 **Admin Credentials:**
 -   **Email:** `admin123@inventory.com`
 -   **Password:** `12345678`
 -   <img width="1920" height="1080" alt="Screenshot 2025-10-06 235116" src="https://github.com/user-attachments/assets/199e3348-a02f-4678-923c-f0949396fde9" />
+-   <img width="1920" height="1080" alt="Screenshot 2025-10-06 235036" src="https://github.com/user-attachments/assets/9bffcb20-cc97-4a04-9bcb-bed1374d2376" />
+
 
 
 ## Table of Contents
