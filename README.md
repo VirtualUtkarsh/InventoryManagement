@@ -1,11 +1,11 @@
-# Inventory Management System
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e3527487-7867-4071-b109-9cf8044fb2ea" /># Inventory Management System
 
 A full-stack web application designed to streamline inventory tracking, manage inbound and outbound stock, and provide robust user management capabilities for administrators. This system offers a user-friendly interface to monitor inventory levels, process transactions, and maintain an organized warehouse.
 ## Live Demo
 
 You can test the live application here:
 
-**Link:** [https://inventory-management-system-jhci.onrender.com/](https://inventory-management-system-jhci.onrender.com/)
+**Link:**{https://inventory-green-seven.vercel.app/} 
 
 **Admin Credentials:**
 -   **Email:** `admin123@inventory.com`
