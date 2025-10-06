@@ -1,60 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const Outset = require('../models/Outset');
-const Inventory = require('../models/Inventory');
-const auth = require('../middleware/auth');
+const { 
+  createOutset, 
+  createBatchOutset, 
+  getOutsets, 
+  getBatchSummary 
+} = require('../controllers/outsetController');
+const { auth } = require('../middleware/auth');
 
-// @route   POST /api/outset
-// @desc    Create outbound record
-router.post('/', auth, async (req, res) => {
-  try {
-    const { sku, quantity, customerName, invoiceNo, bin } = req.body;
+// IMPORTANT: Specific routes must come BEFORE generic routes
 
-    // Verify item exists and has sufficient quantity
-    const inventoryItem = await Inventory.findOne({ sku });
-    if (!inventoryItem) {
-      return res.status(400).json({ message: 'Item not found in inventory' });
-    }
+// @route   POST /api/outsets/batch
+// @desc    Create multiple outbound records in one transaction  
+router.post('/batch', auth, createBatchOutset);
 
-    if (inventoryItem.quantity < quantity) {
-      return res.status(400).json({ 
-        message: `Insufficient stock. Only ${inventoryItem.quantity} available` 
-      });
-    }
+// @route   GET /api/outsets/batch/:batchId
+// @desc    Get batch outbound summary
+router.get('/batch/:batchId', auth, getBatchSummary);
 
-    // Create outset record
-    const outset = new Outset({
-      sku,
-      name: inventoryItem.name,
-      quantity,
-      bin,
-      customerName,
-      invoiceNo,
-      user: {
-        id: req.user.id,
-        name: req.user.name
-      }
-    });
-
-    await outset.save();
-    res.status(201).json(outset);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
-
-// @route   GET /api/outset
+// @route   GET /api/outsets
 // @desc    Get all outbound records
-router.get('/', auth, async (req, res) => {
-  try {
-    const outsets = await Outset.find().sort({ createdAt: -1 });
-    res.json(outsets);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
+router.get('/', auth, getOutsets);
+
+// @route   POST /api/outsets
+// @desc    Create single outbound record (existing functionality)
+router.post('/', auth, createOutset);
 
 module.exports = router;
