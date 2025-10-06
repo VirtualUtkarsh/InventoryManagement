@@ -5,7 +5,7 @@ A full-stack web application designed to streamline inventory tracking, manage i
 
 You can test the live application here:
 
-**Link:**{ https://inventory-git-demouser-utkarsh-singhs-projects-ab9afad9.vercel.app } 
+**Link:**{ https://inventorymgmt-v1.vercel.app } 
 
 **Admin Credentials:**
 -   **Email:** `admin123@inventory.com`
